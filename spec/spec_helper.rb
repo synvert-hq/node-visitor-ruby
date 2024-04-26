@@ -1,7 +1,15 @@
-require "bundler/setup"
+
+# frozen_string_literal: true
+
 require "node_visitor"
 
+Dir[File.join(File.dirname(__FILE__), 'support', '*')].each do |path|
+  require path
+end
+
 RSpec.configure do |config|
+  config.include ParserHelper
+
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
 

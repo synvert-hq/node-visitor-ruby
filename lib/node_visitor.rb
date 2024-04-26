@@ -1,6 +1,42 @@
-require "node_visitor/version"
+require_relative "node_visitor/version"
 
-module NodeVisitor
-  class Error < StandardError; end
-  # Your code goes here...
+class NodeVisitor
+  class InvalidAdapterError < StandardError; end
+
+  autoload :Adapter, "node_visitor/adapter"
+  autoload :PrismAdapter, "node_visitor/adapter/prism"
+
+  def initialize(adapter:)
+    @adapter = get_adapter_instance(adapter)
+    @callbacks = {}
+  end
+
+  def add_callback(node_type, at:, &block)
+    @callbacks[node_type] ||= []
+    @callbacks[node_type] << { block: block, at: at }
+  end
+
+  def visit(node)
+    if node.is_a?(Array)
+      node.each { |child_node| visit(child_node) }
+      return
+    end
+    return unless @adapter.is_node?(node)
+
+    callbacks = @callbacks[@adapter.get_node_type(node)]
+    callbacks.each { |callback| node.instance_eval(&callback[:block]) if callback[:at] == 'start' } if callbacks
+    @adapter.get_children(node).each { |child_node| visit(child_node) }
+    callbacks.each { |callback| node.instance_eval(&callback[:block]) if callback[:at] == 'end' } if callbacks
+  end
+
+  private
+
+  def get_adapter_instance(adapter)
+    case adapter.to_sym
+    when :prism
+      PrismAdapter.new
+    else
+      raise InvalidAdapterError, "adapter #{adapter} is not supported"
+    end
+  end
 end

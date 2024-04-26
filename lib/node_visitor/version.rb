@@ -1,3 +1,3 @@
-module NodeVisitor
+class NodeVisitor
   VERSION = "0.1.0"
 end
