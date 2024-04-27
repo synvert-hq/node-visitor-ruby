@@ -19,15 +19,9 @@ class NodeVisitor
   end
 
   def visit(node)
-    if node.is_a?(Array)
-      node.each { |child_node| visit(child_node) }
-      return
-    end
-    return unless @adapter.is_node?(node)
-
-    callbacks = @callbacks[@adapter.get_node_type(node)]
+    callbacks = @callbacks[:all]
     callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
-    @adapter.get_children(node).each { |child_node| visit(child_node) }
+    visit_node(node)
     callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
   end
 
@@ -44,5 +38,18 @@ class NodeVisitor
     else
       raise InvalidAdapterError, "adapter #{adapter} is not supported"
     end
+  end
+
+  def visit_node(node)
+    if node.is_a?(Array)
+      node.each { |child_node| visit_node(child_node) }
+      return
+    end
+    return unless @adapter.is_node?(node)
+
+    callbacks = @callbacks[@adapter.get_node_type(node)]
+    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
+    @adapter.get_children(node).each { |child_node| visit_node(child_node) }
+    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
   end
 end
