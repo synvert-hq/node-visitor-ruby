@@ -4,7 +4,9 @@ class NodeVisitor
   class InvalidAdapterError < StandardError; end
 
   autoload :Adapter, "node_visitor/adapter"
+  autoload :ParserAdapter, "node_visitor/adapter/parser"
   autoload :PrismAdapter, "node_visitor/adapter/prism"
+  autoload :SyntaxTreeAdapter, "node_visitor/adapter/syntax_tree"
 
   def initialize(adapter:)
     @adapter = get_adapter_instance(adapter)
@@ -33,6 +35,10 @@ class NodeVisitor
 
   def get_adapter_instance(adapter)
     case adapter.to_sym
+    when :parser
+      ParserAdapter.new
+    when :syntax_tree
+      SyntaxTreeAdapter.new
     when :prism
       PrismAdapter.new
     else
