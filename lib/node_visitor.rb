@@ -18,11 +18,11 @@ class NodeVisitor
     @callbacks[node_type] << { block: block, at: at }
   end
 
-  def visit(node)
+  def visit(node, block_context = self)
     callbacks = @callbacks[:all]
-    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
+    callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
     visit_node(node)
-    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
+    callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
   end
 
   private
