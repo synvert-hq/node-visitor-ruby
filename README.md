@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/synvert-hq/node-visitor-ruby/actions/workflows/main.yml/badge.svg)](https://github.com/synvert-hq/node-visitor-ruby/actions/workflows/main.yml)
 [![Gem Version](https://img.shields.io/gem/v/node_visitor.svg)](https://rubygems.org/gems/node_visitor)
 
-`NodeVisitor` allows you to define callbacks based node node type, then visit the AST nodes.
+NodeVisitor allows you to define callbacks based on node type, then visit the AST nodes.
 
 ## Installation
 
