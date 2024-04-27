@@ -19,6 +19,8 @@ class NodeVisitor
   end
 
   def visit(node, block_context = self)
+    return if @callbacks.empty?
+
     callbacks = @callbacks[:all]
     callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
     visit_node(node)
