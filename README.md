@@ -1,8 +1,9 @@
 # NodeVisitor
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/node_visitor`. To experiment with that code, run `bin/console` for an interactive prompt.
+[![Build Status](https://github.com/synvert-hq/node-visitor-ruby/actions/workflows/main.yml/badge.svg)](https://github.com/synvert-hq/node-visitor-ruby/actions/workflows/main.yml)
+[![Gem Version](https://img.shields.io/gem/v/node_visitor.svg)](https://rubygems.org/gems/node_visitor)
 
-TODO: Delete this and the text above, and describe your gem
+`NodeVisitor` allows you to define callbacks based node node type, then visit the AST nodes.
 
 ## Installation
 
@@ -22,7 +23,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+1. initialize the visitor
+
+```ruby
+visitor = NodeVisitor.new(adapter: 'prism')
+```
+
+2. add callbacks
+
+```ruby
+# this will be triggered when it starts to visit class_node
+visitor.add_callback(:class_node, at: 'start') do |node|
+  node.name # get the name of class node
+end
+
+# this will be triggered after it finishes to visit class_node
+visitor.add_callback(:class_node, at: 'end') do |node|
+  node.name # get the name of class node
+end
+```
+
+There is a special node type, `:all`, which is triggered before or after visiting all nodes.
+
+```ruby
+# this will be triggered after it finishes to visit all nodes
+visitor.add_callback(:class_node, at: 'end') do
+end
+```
+
+3. visit the AST node
+
+```ruby
+visitor.visit(node)
+```
 
 ## Development
 
@@ -32,4 +65,4 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/node_visitor.
+Bug reports and pull requests are welcome on GitHub at https://github.com/synvert-hq/node_visitor.
