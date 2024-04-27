@@ -24,9 +24,9 @@ class NodeVisitor
     return unless @adapter.is_node?(node)
 
     callbacks = @callbacks[@adapter.get_node_type(node)]
-    callbacks.each { |callback| node.instance_eval(&callback[:block]) if callback[:at] == 'start' } if callbacks
+    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
     @adapter.get_children(node).each { |child_node| visit(child_node) }
-    callbacks.each { |callback| node.instance_eval(&callback[:block]) if callback[:at] == 'end' } if callbacks
+    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
   end
 
   private
