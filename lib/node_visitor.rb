@@ -23,7 +23,7 @@ class NodeVisitor
 
     callbacks = @callbacks[:all]
     callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
-    visit_node(node)
+    visit_node(node, block_context)
     callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
   end
 
@@ -42,16 +42,16 @@ class NodeVisitor
     end
   end
 
-  def visit_node(node)
+  def visit_node(node, block_context)
     if node.is_a?(Array)
-      node.each { |child_node| visit_node(child_node) }
+      node.each { |child_node| visit_node(child_node, block_context) }
       return
     end
     return unless @adapter.is_node?(node)
 
     callbacks = @callbacks[@adapter.get_node_type(node)]
-    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
-    @adapter.get_children(node).each { |child_node| visit_node(child_node) }
-    callbacks.each { |callback| instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
+    callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
+    @adapter.get_children(node).each { |child_node| visit_node(child_node, block_context) }
+    callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
   end
 end
