@@ -22,9 +22,11 @@ class NodeVisitor
     return if @callbacks.empty?
 
     callbacks = @callbacks[:all]
-    callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
-    visit_node(node, block_context)
-    callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
+    catch(:abort) do
+      callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'start' } if callbacks
+      visit_node(node, block_context)
+      callbacks.each { |callback| block_context.instance_exec(node, &callback[:block]) if callback[:at] == 'end' } if callbacks
+    end
   end
 
   private
